@@ -22,7 +22,7 @@ export function Flashcard({ question }: { question: TrainingQuestion }) {
     const result = await saveTrainingAnswerAction({
       vocabularyId: question.vocabularyId,
       isCorrect,
-      mode: question.type === "multiple-choice" ? "multiple_choice" : "flashcard",
+      mode: question.type === "multiple_choice" ? "multiple_choice" : "flashcard",
     });
 
 if (result.ok) {
