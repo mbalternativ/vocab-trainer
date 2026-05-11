@@ -5,14 +5,19 @@ import type { TrainingQuestion } from "@/domain/training/training.types";
 import { saveTrainingAnswerAction } from "@/actions/training.actions";
 import { FormSubmitButton } from "@/components/ui/form-submit-button";
 
-const initialState = {
-  ok: false as const,
+type FormState = {
+  ok: boolean;
+  message: string;
+};
+
+const initialState: FormState = {
+  ok: false,
   message: "",
 };
 
 export function Flashcard({ question }: { question: TrainingQuestion }) {
   const [revealed, setRevealed] = useState(false);
-  const [state, formAction] = useActionState(async (_: typeof initialState, formData: FormData) => {
+  const [state, formAction] = useActionState(async (_: FormState, formData: FormData) => {
     const isCorrect = formData.get("isCorrect") === "true";
     const result = await saveTrainingAnswerAction({
       vocabularyId: question.vocabularyId,
@@ -20,19 +25,19 @@ export function Flashcard({ question }: { question: TrainingQuestion }) {
       mode: question.type === "multiple-choice" ? "multiple_choice" : "flashcard",
     });
 
-    if (result.ok) {
-      return {
-        ok: true as const,
-        message: isCorrect
-          ? `Saved. +${result.xpAwarded} XP, mastery now ${result.masteryLevel}.`
-          : `Saved as incorrect. Mastery now ${result.masteryLevel}.`,
-      };
-    }
+if (result.ok) {
+  return {
+    ok: true,
+    message: isCorrect
+      ? `Saved. +${result.xpAwarded} XP, mastery now ${result.masteryLevel}.`
+      : `Saved as incorrect. Mastery now ${result.masteryLevel}.`,
+  } as FormState;
+}
 
-    return {
-      ok: false as const,
-      message: result.message ?? "Could not save training result.",
-    };
+return {
+  ok: false,
+  message: result.message ?? "Could not save training result.",
+} as FormState;
   }, initialState);
 
   return (
