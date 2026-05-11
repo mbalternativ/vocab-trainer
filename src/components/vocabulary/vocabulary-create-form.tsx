@@ -6,16 +6,26 @@ import type { Lesson } from "@/domain/lessons/lessons.types";
 import { FormSubmitButton } from "@/components/ui/form-submit-button";
 
 const initialState = {
-  ok: false as const,
-  message: "",
-  errors: undefined as
-    | {
-        fieldErrors?: Record<string, string[] | undefined>;
-      }
-    | undefined,
+  type FormState = {
+  ok: boolean;
+  message: string;
+  errors?: {
+    fieldErrors?: Record<string, string[] | undefined>;
+  };
 };
 
-async function submitCreateVocabulary(_: typeof initialState, formData: FormData) {
+const initialState: FormState = {
+  ok: false,
+  message: "",
+  errors: undefined,
+};
+};
+
+async function submitCreateVocabulary(_: FormState,
+
+  formData: FormData
+
+): Promise<FormState> {
   const isPublishedValue = formData.get("isPublished");
   const difficultyValue = formData.get("difficulty");
   const lessonIdValue = formData.get("lessonId");
@@ -34,19 +44,19 @@ async function submitCreateVocabulary(_: typeof initialState, formData: FormData
     isPublished: isPublishedValue === "on",
   });
 
-  if (result.ok) {
-    return {
-      ok: true as const,
-      message: `Saved “${result.data.english}”.`,
-      errors: undefined,
-    };
-  }
-
+if (result.ok) {
   return {
-    ok: false as const,
-    message: result.message ?? "Could not save vocabulary item.",
-    errors: result.errors,
-  };
+    ok: true,
+    message: `Saved “${result.data.english}”.`,
+    errors: undefined,
+  } as FormState;
+}
+
+return {
+  ok: false,
+  message: result.message ?? "Could not save vocabulary item.",
+  errors: result.errors,
+} as FormState;
 }
 
 function FieldError({ errors, name }: { errors?: Record<string, string[] | undefined>; name: string }) {
