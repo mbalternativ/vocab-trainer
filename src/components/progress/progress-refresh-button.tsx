@@ -4,18 +4,25 @@ import { useActionState } from "react";
 import { refreshProgressAction } from "@/actions/progress.actions";
 import { FormSubmitButton } from "@/components/ui/form-submit-button";
 
-const initialState = {
-  ok: false as const,
+type FormState = {
+  ok: boolean;
+  message: string;
+};
+
+const initialState: FormState = {
+  ok: false,
   message: "",
 };
 
 export function ProgressRefreshButton() {
-  const [state, formAction] = useActionState(async () => {
+  const [state, formAction] = useActionState(async (_: FormState) => {
     const result = await refreshProgressAction();
     return {
-      ok: result.ok,
-      message: result.ok ? `Progress refreshed. Total XP: ${result.data.totalXp}.` : "Could not refresh progress.",
-    };
+  ok: Boolean(result.ok),
+  message: result.ok
+    ? `Progress refreshed. Total XP: ${result.data.totalXp}.`
+    : "Could not refresh progress.",
+} as FormState;
   }, initialState);
 
   return (
