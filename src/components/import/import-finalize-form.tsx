@@ -4,13 +4,18 @@ import { useActionState } from "react";
 import { finalizeImportAction } from "@/actions/import.actions";
 import { FormSubmitButton } from "@/components/ui/form-submit-button";
 
-const initialState = {
-  ok: false as const,
+type FormState = {
+  ok: boolean;
+  message: string;
+};
+
+const initialState: FormState = {
+  ok: false,
   message: "",
 };
 
 export function ImportFinalizeForm({ importId }: { importId?: string }) {
-  const [state, formAction] = useActionState(async (_: typeof initialState, formData: FormData) => {
+  const [state, formAction] = useActionState(async (_: FormState, formData: FormData) => {
     const id = String(formData.get("importId") ?? "").trim();
     const result = await finalizeImportAction({ importId: id });
 
